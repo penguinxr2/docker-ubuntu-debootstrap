@@ -8,11 +8,13 @@ curl -sSfLR --create-dirs \
   https://github.com/wmark/docker-curl/raw/master/ca-certificates.crt
 
 : ${ARCH:=amd64}
+: ${DOCKER_PREFIX:=""}
 
 mktarball() {
   local ARCH=$1
   local NUM=$2
   local WORKDIR=$(mktemp -d -t $ARCH-$NUM.XXXXXX)
+  local DOCKERTAG="${DOCKER_PREFIX}debootstrap-${ARCH}:${NUM}"
 
   cp -a $NUM/multistrap.conf $WORKDIR/
   sed -i \
@@ -36,14 +38,14 @@ mktarball() {
   (cd $WORKDIR/target-dir; tar -caf ../rootfs.tar.xz ./* && cd .. && rm -rf target-dir)
 
   cp Dockerfile $WORKDIR/
-  (cd $WORKDIR; docker build --rm -t "$ARCH-debootstrap:$NUM" .)
+  (cd $WORKDIR; docker build --rm -t "$DOCKERTAG" .)
 
   if [[ -d $NUM/$ARCH ]]; then
     rm -r $NUM/$ARCH
   fi
   mv $WORKDIR $NUM/$ARCH
 
-  docker run --rm "$ARCH-debootstrap:$NUM" dpkg-query -f '${Status}\t${Package}\t${Version}\n' -W \
+  docker run --rm "$DOCKERTAG" dpkg-query -f '${Status}\t${Package}\t${Version}\n' -W \
     | awk '/^install ok installed/{print $4,"\t",$5}' >$NUM/$ARCH/build.manifest
 }
 
