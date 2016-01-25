@@ -7,6 +7,10 @@ set -e -o pipefail
 export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 export LC_ALL=C LANGUAGE=C LANG=C
 
+if ! grep '^' /etc/shells; then
+  printf "/bin/sh\n/bin/dash\n/bin/bash\n/bin/rbash\n" > /etc/shells
+fi
+
 # This removes packages we don't need in a Docker image:
 apt-get -y --allow-remove-essential remove \
   systemd \
