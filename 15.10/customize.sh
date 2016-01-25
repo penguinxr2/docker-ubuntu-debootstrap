@@ -21,8 +21,21 @@ apt-get -y --allow-remove-essential remove \
 cat /etc/apt/sources.list.d/multistrap-*.list | sort -u | sed -e '/^deb-src/s:^:# :' | sort > /etc/apt/sources.list
 rm /etc/apt/sources.list.d/multistrap-*.list
 
+# remove uncommon locales and charmaps
+mv /usr/share/i18n/charmaps/{ISO-8859-1,UTF-8,GBK}.gz /
+rm /usr/share/i18n/charmaps/*.gz
+mv /{ISO-8859-1,UTF-8,GBK}.gz /usr/share/i18n/charmaps/
+
+mv /usr/share/i18n/locales/{i18n,iso14651_t1,iso14651_t1_common,POSIX,ISO,translit_*,en_GB,en_US} /
+rm /usr/share/i18n/locales/*
+rm /translit_{hangul,cjk_variants}
+mv /{i18n,iso14651_t1,iso14651_t1_common,POSIX,ISO,translit_*,en_GB,en_US} /usr/share/i18n/locales/
+
 # Creates /etc/default/locale
-update-locale LANG=C.UTF-8
+printf "ISO.UTF-8 UTF-8\n" >> /usr/share/i18n/SUPPORTED
+locale-gen "ISO.UTF-8"
+dpkg-reconfigure locales
+update-locale --no-checks LANG=ISO.UTF-8
 
 # some swag
 cat >>/etc/bash.bashrc <<EOF

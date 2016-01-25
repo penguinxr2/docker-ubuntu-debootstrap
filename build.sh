@@ -26,7 +26,8 @@ mktarball() {
 
   mkdir -p $WORKDIR/target-dir/etc/ssl/certs
   cp -a contrib/etc/ssl/certs/ca-certificates.crt $_
-  cp -a $NUM/customize.sh $WORKDIR/target-dir/
+  cp -a contrib/share/i18n/locales/* $WORKDIR/target-dir/usr/share/i18n/locales/
+  cp $NUM/customize.sh $WORKDIR/target-dir/
 
   (cd $WORKDIR; \
    mount proc -t proc target-dir/proc \
