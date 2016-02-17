@@ -27,6 +27,15 @@ mv /{getopt,taskset} /usr/bin/
 cat /etc/apt/sources.list.d/multistrap-*.list | sort -u | sed -e '/^deb-src/s:^:# :' | sort > /etc/apt/sources.list
 rm /etc/apt/sources.list.d/multistrap-*.list
 
+# Add everything we remove below to its own neat tarball for recovery
+tar --use-compress-program=plzip \
+  -cf /extra.tar.lz \
+  /usr/share/i18n/charmaps \
+  /usr/share/i18n/locales \
+  /usr/share/locale \
+  /usr/share/zoneinfo \
+  /usr/share/doc /usr/share/man
+
 # remove uncommon locales and charmaps
 mv /usr/share/i18n/charmaps/{ISO-8859-1,UTF-8,GBK}.gz /
 rm /usr/share/i18n/charmaps/*.gz
@@ -37,11 +46,23 @@ rm /usr/share/i18n/locales/*
 rm /translit_{hangul,cjk_variants}
 mv /{i18n,iso14651_t1,iso14651_t1_common,POSIX,ISO,translit_*,en_GB,en_US} /usr/share/i18n/locales/
 
+find /usr/share/locale/ -maxdepth 1 -mindepth 1 -type d -exec rm -r '{}' \;
+
+mv /usr/share/zoneinfo/{Etc,Factory,localtime,posixrules,Universal,UTC,Zulu} /tmp/
+rm -r /usr/share/zoneinfo/*
+mv /tmp/{Etc,Factory,localtime,posixrules,Universal,UTC,Zulu} /usr/share/zoneinfo/
+
+# remove doc- and manpages -- this is no interactive system
+rm -r /usr/share/doc /usr/share/man
+
 # Creates /etc/default/locale
 printf "ISO.UTF-8 UTF-8\n" >> /usr/share/i18n/SUPPORTED
 locale-gen "ISO.UTF-8"
 dpkg-reconfigure locales
 update-locale --no-checks LANG=ISO.UTF-8
+
+# remove cruft
+find /var -name '*-old' -type f -delete
 
 # some swag
 cat >>/etc/bash.bashrc <<EOF

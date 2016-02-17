@@ -35,6 +35,8 @@ mktarball() {
    && chroot target-dir/ /bin/bash /customize.sh; \
    umount target-dir/proc target-dir/dev)
   rm $WORKDIR/target-dir/customize.sh
+  mv $WORKDIR/target-dir/extra.tar.* $WORKDIR/
+  printf "build.manifest\nextra.tar.*\nrootfs_contents.sig\n" > $WORKDIR/.dockerignore
 
   (cd $WORKDIR/target-dir; tar -caf ../rootfs.tar.xz ./* && cd .. && rm -rf target-dir)
 
