@@ -7,11 +7,12 @@ set -e -o pipefail
 export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 export LC_ALL=C LANGUAGE=C LANG=C
 
-if ! grep '^' /etc/shells; then
+if ! grep -q '^' /etc/shells; then
   printf "/bin/sh\n/bin/dash\n/bin/bash\n/bin/rbash\n" > /etc/shells
 fi
 
 # This removes packages we don't need in a Docker image:
+cp -a /usr/bin/{getopt,taskset} /
 apt-get -y --allow-remove-essential remove \
   systemd \
   libsystemd. \
@@ -20,6 +21,7 @@ apt-get -y --allow-remove-essential remove \
   libdevmapper. \
   libkmod. \
   libfdisk.
+mv /{getopt,taskset} /usr/bin/
 
 # Making it one file makes it easier for the user to tell what has been from what he added.
 cat /etc/apt/sources.list.d/multistrap-*.list | sort -u | sed -e '/^deb-src/s:^:# :' | sort > /etc/apt/sources.list
