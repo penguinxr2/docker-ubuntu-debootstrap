@@ -2,10 +2,14 @@
 
 set -e -o pipefail
 
-. /etc/profile
+if [[ -s /etc/profile ]]; then
+  . /etc/profile
+fi
 
 export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 export LC_ALL=C LANGUAGE=C LANG=C
+
+echo "no" | dpkg-reconfigure --force dash
 
 if ! grep -q '^' /etc/shells; then
   printf "/bin/sh\n/bin/dash\n/bin/bash\n/bin/rbash\n" > /etc/shells
@@ -58,7 +62,6 @@ rm -r /usr/share/doc /usr/share/man
 # Creates /etc/default/locale
 printf "ISO.UTF-8 UTF-8\n" >> /usr/share/i18n/SUPPORTED
 locale-gen "ISO.UTF-8"
-dpkg-reconfigure locales
 update-locale --no-checks LANG=ISO.UTF-8
 
 # remove cruft

@@ -20,6 +20,7 @@ mktarball() {
   sed -i \
     -e "s@/tmp/amd64@${WORKDIR}@g" \
     -e "/^arch=/c\arch=${ARCH}" \
+    -e "/s.blitznote.com/s:amd64:${ARCH}:" \
     $WORKDIR/multistrap.conf
   multistrap -f $WORKDIR/multistrap.conf || true
   rm $WORKDIR/multistrap.conf
