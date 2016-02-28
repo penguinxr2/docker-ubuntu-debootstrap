@@ -90,3 +90,16 @@ alias dir="ls -alh --color"
 EOF
 
 sed -i -e "/color_prompt.*then/,/fi/{N;d}" /root/.bashrc
+
+# tune apt and dpkg
+printf 'force-unsafe-io' > /etc/dpkg/dpkg.cfg.d/docker-apt-speedup
+
+cat >/etc/apt/apt.conf.d/docker-tuning <<EOF
+Acquire::Languages "none";
+Acquire::GzipIndexes "true";
+APT::Update::Post-Invoke { "rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true"; };
+
+Dir::Cache::pkgcache "";
+Dir::Cache::srcpkgcache "";'
+DPkg::Post-Invoke { "rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true"; };
+EOF
