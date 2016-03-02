@@ -9,11 +9,13 @@ fi
 export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 export LC_ALL=C LANGUAGE=C LANG=C
 
-dpkg-divert --package bash --remove /bin/sh
-dpkg-divert --package bash --remove /usr/share/man/man1/sh.1.gz
-dpkg-divert --package dash --divert /bin/sh.distrib --add /bin/sh
-dpkg-divert --package dash --divert /usr/share/man/man1/sh.distrib.1.gz --add /usr/share/man/man1/sh.1.gz
-echo "no" | dpkg-reconfigure --force dash
+if [[ "$(dpkg --print-architecture)" == "i386" ]]; then
+  dpkg-divert --package bash --remove /bin/sh
+  dpkg-divert --package bash --remove /usr/share/man/man1/sh.1.gz
+  dpkg-divert --package dash --divert /bin/sh.distrib --add /bin/sh
+  dpkg-divert --package dash --divert /usr/share/man/man1/sh.distrib.1.gz --add /usr/share/man/man1/sh.1.gz
+  echo "no" | dpkg-reconfigure --force dash
+fi
 dpkg --configure -a
 
 if ! grep -q '^' /etc/shells; then
@@ -31,6 +33,8 @@ apt-get -y --allow-remove-essential remove \
   libkmod. \
   libfdisk.
 mv /{getopt,taskset} /usr/bin/
+
+printf "Package: ca-certificates\nStatus: install ok installed\nVersion: $(date --utc +'%Y%m%d')\nArchitecture: all\nDescription: Common CA certificates\nMaintainer: Nobody <noreply@blitznote.de>\n\n" >> /var/lib/dpkg/status
 
 # Making it one file makes it easier for the user to tell what has been from what he added.
 cat /etc/apt/sources.list.d/multistrap-*.list | sort -u | sed -e '/^deb-src/s:^:# :' | sort > /etc/apt/sources.list
