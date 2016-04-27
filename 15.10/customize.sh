@@ -24,14 +24,9 @@ fi
 
 # This removes packages we don't need in a Docker image:
 cp -a /usr/bin/{getopt,taskset} /
-apt-get -y --allow-remove-essential remove \
-  systemd \
-  libsystemd. \
-  libdebconfclient. \
-  e2fslibs \
-  libdevmapper. \
-  libkmod. \
-  libfdisk.
+for entry in systemd libsystemd. libdebconfclient. e2fslibs libdevmapper. libkmod. libfdisk.; do
+  apt-get -y --allow-remove-essential remove ${entry} || true
+done
 mv /{getopt,taskset} /usr/bin/
 
 printf "Package: ca-certificates\nStatus: install ok installed\nVersion: $(date --utc +'%Y%m%d')\nArchitecture: all\nDescription: Common CA certificates\nMaintainer: Nobody <noreply@blitznote.de>\n\n" >> /var/lib/dpkg/status
@@ -50,9 +45,9 @@ tar --use-compress-program=plzip \
   /usr/share/doc /usr/share/man
 
 # remove uncommon locales and charmaps
-mv /usr/share/i18n/charmaps/{ISO-8859-1,UTF-8,GBK}.gz /
+mv /usr/share/i18n/charmaps/{ISO-8859-1,UTF-8,GBK,ANSI_X3.110-1983,ANSI_X3.4-1968}.gz /
 rm /usr/share/i18n/charmaps/*.gz
-mv /{ISO-8859-1,UTF-8,GBK}.gz /usr/share/i18n/charmaps/
+mv /{ISO-8859-1,UTF-8,GBK,ANSI_X3.110-1983,ANSI_X3.4-1968}.gz /usr/share/i18n/charmaps/
 
 mv /usr/share/i18n/locales/{i18n,iso14651_t1,iso14651_t1_common,POSIX,ISO,translit_*,en_GB,en_US} /
 rm /usr/share/i18n/locales/*
