@@ -111,3 +111,5 @@ Dir::Cache::pkgcache "";
 Dir::Cache::srcpkgcache "";'
 DPkg::Post-Invoke { "rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true"; };
 EOF
+
+echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
