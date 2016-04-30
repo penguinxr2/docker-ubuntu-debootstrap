@@ -30,6 +30,8 @@ done
 mv /{getopt,taskset} /usr/bin/
 
 printf "Package: ca-certificates\nStatus: install ok installed\nVersion: $(date --utc +'%Y%m%d')\nArchitecture: all\nDescription: Common CA certificates\nMaintainer: Nobody <noreply@blitznote.de>\n\n" >> /var/lib/dpkg/status
+printf "/etc/ssl/certs/ca-certificates.crt\n" >/var/lib/dpkg/info/ca-certificates.list
+md5sum etc/ssl/certs/ca-certificates.crt >/var/lib/dpkg/info/ca-certificates.md5sums
 
 # Making it one file makes it easier for the user to tell what has been from what he added.
 cat /etc/apt/sources.list.d/multistrap-*.list | sort -u | sed -e '/^deb-src/s:^:# :' | sort > /etc/apt/sources.list
