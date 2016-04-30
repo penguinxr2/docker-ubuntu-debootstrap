@@ -33,6 +33,13 @@ printf "Package: ca-certificates\nStatus: install ok installed\nVersion: $(date 
 printf "/etc/ssl/certs/ca-certificates.crt\n" >/var/lib/dpkg/info/ca-certificates.list
 md5sum etc/ssl/certs/ca-certificates.crt >/var/lib/dpkg/info/ca-certificates.md5sums
 
+if [[ ! -x /usr/bin/gpg ]]; then
+  update-alternatives --install /usr/bin/gpg gnupg /usr/bin/gpg2 100
+fi
+if [[ ! -x /usr/bin/gpgv ]]; then
+  update-alternatives --install /usr/bin/gpgv gpgv /usr/bin/gpgv2 100
+fi
+
 # Making it one file makes it easier for the user to tell what has been from what he added.
 cat /etc/apt/sources.list.d/multistrap-*.list | sort -u | sed -e '/^deb-src/s:^:# :' | sort > /etc/apt/sources.list
 rm /etc/apt/sources.list.d/multistrap-*.list
