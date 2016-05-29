@@ -27,6 +27,7 @@ mktarball() {
 
   mkdir -p $WORKDIR/target-dir/etc/ssl/certs
   cp -a contrib/etc/ssl/certs/ca-certificates.crt $_
+  cp contrib/usr/bin/get-gpg-key $WORKDIR/target-dir/usr/bin/
   cp -a contrib/share/i18n/locales/* $WORKDIR/target-dir/usr/share/i18n/locales/
   cp $NUM/customize.sh $WORKDIR/target-dir/
 
