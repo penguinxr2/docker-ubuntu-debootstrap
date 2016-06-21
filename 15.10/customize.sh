@@ -41,7 +41,10 @@ if [[ ! -x /usr/bin/gpgv ]]; then
 fi
 
 # Making it one file makes it easier for the user to tell what has been from what he added.
-cat /etc/apt/sources.list.d/multistrap-*.list | sort -u | sed -e '/^deb-src/s:^:# :' | sort > /etc/apt/sources.list
+cat /etc/apt/sources.list.d/multistrap-*.list \
+| sort -u \
+| sed -e '/^deb-src/s:^:# :' -e '/blitznote/s:]: trusted=yes]:g' \
+| sort >/etc/apt/sources.list
 rm /etc/apt/sources.list.d/multistrap-*.list
 
 # Add everything we remove below to its own neat tarball for recovery
