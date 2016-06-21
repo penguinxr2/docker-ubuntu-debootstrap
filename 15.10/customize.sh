@@ -113,3 +113,9 @@ DPkg::Post-Invoke { "rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives
 EOF
 
 echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+
+if [[ ! -s /var/log/installer/initial-status.gz ]]; then
+  mkdir -p /var/log/installer
+  dpkg-query --show --showformat="Package: \${Package}\n" \
+  | gzip -9 >/var/log/installer/initial-status.gz
+fi
