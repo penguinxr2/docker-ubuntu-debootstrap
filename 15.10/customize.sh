@@ -17,7 +17,8 @@ fi
 
 # This removes packages we don't need in a Docker image:
 cp -a /usr/bin/{getopt,taskset} /
-for entry in systemd libsystemd. libdebconfclient. e2fslibs libdevmapper. libkmod. libfdisk. mount login libmount1 libblkid1 libcryptsetup4; do
+for entry in systemd libsystemd. libdebconfclient. e2fslibs libdevmapper. libkmod. libfdisk. mount login libmount1 libblkid1 libcryptsetup4 \
+             diffutils gcc-5-base insserv libapparmor1 libcap2 libcap2-bin libcomerr2 libncurses5 ncurses-bin libss2; do
   apt-get -y --allow-remove-essential remove ${entry} || true
 done
 mv /{getopt,taskset} /usr/bin/
