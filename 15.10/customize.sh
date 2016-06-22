@@ -9,13 +9,6 @@ fi
 export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 export LC_ALL=C LANGUAGE=C LANG=C
 
-if [[ "$(dpkg --print-architecture)" == "i386" ]]; then
-  dpkg-divert --package bash --remove /bin/sh
-  dpkg-divert --package bash --remove /usr/share/man/man1/sh.1.gz
-  dpkg-divert --package dash --divert /bin/sh.distrib --add /bin/sh
-  dpkg-divert --package dash --divert /usr/share/man/man1/sh.distrib.1.gz --add /usr/share/man/man1/sh.1.gz
-  echo "no" | dpkg-reconfigure --force dash
-fi
 dpkg --configure -a
 
 if ! grep -q '^' /etc/shells; then
