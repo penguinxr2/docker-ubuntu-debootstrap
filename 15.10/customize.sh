@@ -16,12 +16,12 @@ if ! grep -q '^' /etc/shells; then
 fi
 
 # This removes packages we don't need in a Docker image:
-cp -a /usr/bin/{getopt,taskset} /
+cp -a /usr/bin/{getopt,script,taskset} /
 for entry in systemd libsystemd. libdebconfclient. e2fslibs libdevmapper. libkmod. libfdisk. mount login libmount1 libblkid1 libcryptsetup4 \
              diffutils gcc-5-base insserv libapparmor1 libcap2 libcap2-bin libcomerr2 libncurses5 ncurses-bin libss2; do
   apt-get -y --allow-remove-essential remove ${entry} || true
 done
-mv /{getopt,taskset} /usr/bin/
+mv /{getopt,script,taskset} /usr/bin/
 
 printf "Package: ca-certificates\nStatus: install ok installed\nVersion: $(date --utc +'%Y%m%d')\nArchitecture: all\nDescription: Common CA certificates\nMaintainer: Nobody <noreply@blitznote.de>\n\n" >> /var/lib/dpkg/status
 printf "/etc/ssl/certs/ca-certificates.crt\n" >/var/lib/dpkg/info/ca-certificates.list
@@ -40,6 +40,7 @@ cat /etc/apt/sources.list.d/multistrap-*.list \
 | sed -e '/^deb-src/s:^:# :' -e '/blitznote/s:]: trusted=yes]:g' \
 | sort >/etc/apt/sources.list
 rm /etc/apt/sources.list.d/multistrap-*.list
+printf 'Package: apt-transport-https curl golang-1.6* libcurl3 libssl1.0.0 libtorrent19 openssl rtorrent\nPin: origin "s.blitznote.com"\nPin-Priority: 509\n' > /etc/apt/preferences.d/from-blitznote
 
 # Add everything we remove below to its own neat tarball for recovery
 tar --use-compress-program=plzip \
@@ -76,6 +77,7 @@ update-locale --no-checks LANG=ISO.UTF-8
 
 # remove cruft
 find /var -name '*-old' -type f -delete
+find /etc -name '*~' -type f -delete
 
 # some swag
 cat >>/etc/bash.bashrc <<EOF
